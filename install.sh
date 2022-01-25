@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 mkdir av1
 cd av1
 for dav1dversion in "git-6aaeeea6"; do
@@ -53,9 +53,9 @@ for dav1dversion in "git-6aaeeea6"; do
         else
             mkdir x86_64
             cd x86_64
-            if [[ $OSTYPE =~ "^darwin.*" ]]; then
+            if [[ $OSTYPE =~ ^darwin.* ]]; then
                 OS="macos"
-            elif [[ $OSTYPE =~ "^linux.*" ]]; then
+            elif [[ $OSTYPE =~ ^linux.* ]]; then
                 OS="linux"
             fi
             wget https://github.com/ZChuckMoris/dav1d/releases/download/$dav1dversion/dav1d-$OS-x86_64-$dav1dversion$compileversion.tar.gz
