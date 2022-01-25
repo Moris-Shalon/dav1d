@@ -49,7 +49,7 @@ for dav1dversion in "git-6aaeeea6"; do
         cd ../../
         
         if [[ $(arch) == "x86_64" || $(arch) == "i386" ]]; then
-            ;
+            echo "arch = $(arch)"
         else
             mkdir x86_64
             cd x86_64
