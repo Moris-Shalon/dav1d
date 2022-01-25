@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 mkdir av1
 cd av1
 for dav1dversion in "git-6aaeeea6"; do
