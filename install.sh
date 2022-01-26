@@ -64,3 +64,6 @@ for dav1dversion in "git-6aaeeea6"; do
         fi
     done
 done
+for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chimera/Old/Chimera-AV1-8bit-1920x1080-6736kbps.ivf" "Chimera/Old/Chimera-AV1-10bit-1920x1080-6191kbps.ivf"; do 
+    wget http://download.opencontent.netflix.com.s3.amazonaws.com/AV1/$av1video; 
+done
