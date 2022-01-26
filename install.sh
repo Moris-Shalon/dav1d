@@ -17,7 +17,7 @@ for dav1dversion in "git-6aaeeea6"; do
 
         cd ../
         
-        if [[ $compileversion =~ "^-asm.*" ]]; then
+        if [[ $compileversion =~ .*-asm.* ]]; then
             sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) false/\1 true/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
         else
             sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) true/\1 false/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
