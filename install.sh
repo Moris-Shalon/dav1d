@@ -16,7 +16,7 @@ for dav1dversion in "git-6aaeeea6"; do
         fi
 
         cd ../
-        
+
         if [[ $compileversion =~ .*-asm.* ]]; then
             sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) false/\1 true/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
         else
@@ -25,29 +25,29 @@ for dav1dversion in "git-6aaeeea6"; do
 
         buildfolder="dav1d-$dav1dversion$compileversion/build"
         mkdir $buildfolder
-        
+
         if [[ $SHELL == "/bin/zsh" ]]; then
             setopt rmstarsilent
         fi
-        
+
         rm -rf $buildfolder/*
         rm -rf $buildfolder/.*
-        
+
         if [[ $SHELL == "/bin/zsh" ]]; then
             unsetopt rmstarsilent
         fi
-        
+
         cd $buildfolder
-        
+
         if [[ $compileversion =~ ".*-O3.*" || $compileversion =~ ".*-O4.*" ]]; then
             meson .. --optimization=3
         else
             meson ..
         fi
-        
+
         ninja
         cd ../../
-        
+
         if [[ $(arch) == "x86_64" || $(arch) == "i386" ]]; then
             echo "arch = $(arch)"
         else
@@ -64,6 +64,6 @@ for dav1dversion in "git-6aaeeea6"; do
         fi
     done
 done
-for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chimera/Old/Chimera-AV1-8bit-1920x1080-6736kbps.ivf" "Chimera/Old/Chimera-AV1-10bit-1920x1080-6191kbps.ivf"; do 
-    wget http://download.opencontent.netflix.com.s3.amazonaws.com/AV1/$av1video; 
+for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chimera/Old/Chimera-AV1-8bit-1920x1080-6736kbps.ivf" "Chimera/Old/Chimera-AV1-10bit-1920x1080-6191kbps.ivf"; do
+    wget http://download.opencontent.netflix.com.s3.amazonaws.com/AV1/$av1video
 done
