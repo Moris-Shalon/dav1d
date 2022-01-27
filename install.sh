@@ -96,7 +96,7 @@ for compileversion in "${compileversions[@]}"; do
 
     cd $buildfolder
 
-    if [[ $compileversion =~ ".*-O3.*" || $compileversion =~ ".*-O4.*" ]]; then
+    if [[ $compileversion =~ .*-O3.* || $compileversion =~ .*-O4.* ]]; then
         meson .. --optimization=3
     else
         meson ..
