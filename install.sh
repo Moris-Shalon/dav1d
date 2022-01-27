@@ -36,7 +36,7 @@ done
 mkdir av1
 cd av1
 
-if [[ $(arch) == "i386" ]] || [[ $(arch) =~ x86.* ]] || [[ $(arch) == "amd64" ]] || [[ $(arch) =~ arm.* ]] || [[ $(arch) == "aarch64" ]]; then
+if [[ $(arch) == "i386" || $(arch) =~ x86.* || $(arch) == "amd64" || $(arch) =~ arm.* || $(arch) == "aarch64" ]]; then
     declare -a compileversions=("" "-O3" "-O4" "-asm" "-asm-O3")
 else
     declare -a compileversions=("" "-O3" "-O4")
@@ -103,7 +103,7 @@ for compileversion in "${compileversions[@]}"; do
     ninja
     cd ../../
 
-    if [[ $(arch) == "x86_64" || $(arch) == "i386" ]]; then
+    if [[ $(arch) =~ x86.* || $(arch) == "i386" ]]; then
         echo "arch = $(arch)"
     else
         mkdir x86_64
