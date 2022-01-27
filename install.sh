@@ -36,7 +36,13 @@ done
 mkdir av1
 cd av1
 
-for compileversion in "" "-O3" "-asm"; do
+if [[ $(arch) == "i386" ]] || [[ $(arch) =~ x86.* ]] || [[ $(arch) == "amd64" ]] || [[ $(arch) =~ arm.* ]] || [[ $(arch) == "aarch64" ]]; then
+    declare -a compileversions=("" "-O3" "-O4" "-asm" "-asm-O3")
+else
+    declare -a compileversions=("" "-O3" "-O4")
+fi
+
+for compileversion in "${compileversions[@]}"; do
     git clone --recursive https://code.videolan.org/videolan/dav1d dav1d-$dav1dversion$compileversion
     cd dav1d-$dav1dversion$compileversion
     if [[ $dav1dversion = "0.5.2" ]]; then
@@ -56,6 +62,19 @@ for compileversion in "" "-O3" "-asm"; do
     else
         sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) true/\1 false/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
     fi
+
+    if [[ $compileversion =~ .*-O4.* ]] && [[ $(arch) != "e2k" ]]; then
+        sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+    fi
+
+    if [[ $(arch) == "e2k" ]]; then 
+        if [[ $compileversion =~ .*-O3.* ]]; then
+            sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O3'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+        elif [[ $compileversion =~ .*-O4.* ]]; then
+            sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+        fi
+    fi
+
 
     buildfolder="dav1d-$dav1dversion$compileversion/build"
     mkdir $buildfolder
