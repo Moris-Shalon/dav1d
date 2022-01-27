@@ -66,14 +66,14 @@ for compileversion in "${compileversions[@]}"; do
     fi
 
     if [[ $compileversion =~ .*-O4.* ]] && [[ $(arch) != "e2k" ]]; then
-        sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+        sed -i.backup -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'/" ./dav1d-$dav1dversion$compileversion/meson.build
     fi
 
     if [[ $(arch) == "e2k" ]]; then 
         if [[ $compileversion =~ .*-O3.* ]]; then
-            sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O3'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+            sed -i.backup -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O3'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" ./dav1d-$dav1dversion$compileversion/meson.build
         elif [[ $compileversion =~ .*-O4.* ]]; then
-            sed -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" -i.backup ./dav1d-$dav1dversion$compileversion/meson.build
+            sed -i.backup -E "s/'-ffast-math'/'-ffast-math'\n    optional_arguments += '-O4'\n    optional_arguments += '-fwhole'\n    optional_arguments += '-ffast'/" ./dav1d-$dav1dversion$compileversion/meson.build
         fi
     fi
 
