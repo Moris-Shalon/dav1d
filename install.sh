@@ -8,9 +8,11 @@ function usage()
 
    optional arguments:
 
-     -h, --help           show this help message and exit
+     -h, --help         Show this help message and exit
 
-     -v, --version        specify dav1d version to be downloaded and compiled. Supported versions: 0.5.2, 0.8.2, 0.9.2 and 0.9.3-git-6aaeeea6. By default is using version 0.9.3-git-6aaeeea6.
+     -v, --version      Specify dav1d version to be downloaded and compiled. 
+                        Supported versions: 0.5.2, 0.8.2, 0.9.2 and 0.9.3-git-6aaeeea6. 
+                        By default is using version 0.9.3-git-6aaeeea6.
 
 
 HEREDOC
