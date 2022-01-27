@@ -7,11 +7,14 @@ function usage()
    Usage: $0 [--version VERSION]
 
    optional arguments:
+
      -h, --help           show this help message and exit
+
      -v, --version        specify dav1d version to be downloaded and compiled. Supported versions: 0.5.2, 0.8.2, 0.9.2 and 0.9.3-git-6aaeeea6. By default is using version 0.9.3-git-6aaeeea6.
 
+
 HEREDOC
-}  
+}
 
 ## Print help if no args passed
 # if [ "$#" -eq 0 ]; then
@@ -23,15 +26,15 @@ dav1dversion="0.9.3-git-6aaeeea6"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -h|--help) usage;  ;;
+        -h|--help) usage; exit ;;
         -v|--version) dav1dversion="$2"; shift ;;
         *) echo "Unknown parameter passed: $1" ;;
     esac
     shift
 done
 
-mkdir av1
-cd av1
+# mkdir av1
+# cd av1
 
 for compileversion in "" "-O3" "-asm"; do
     git clone --recursive https://code.videolan.org/videolan/dav1d dav1d-$dav1dversion$compileversion
