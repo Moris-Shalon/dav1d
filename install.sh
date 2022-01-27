@@ -33,8 +33,8 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# mkdir av1
-# cd av1
+mkdir av1
+cd av1
 
 for compileversion in "" "-O3" "-asm"; do
     git clone --recursive https://code.videolan.org/videolan/dav1d dav1d-$dav1dversion$compileversion
