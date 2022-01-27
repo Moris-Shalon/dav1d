@@ -57,14 +57,16 @@ for compileversion in "" "-O3" "-asm"; do
     buildfolder="dav1d-$dav1dversion$compileversion/build"
     mkdir $buildfolder
 
-    if [[ $SHELL == "/bin/zsh" ]]; then
+    # if [[ $(ps -p $$ | awk '{print $4}' | tail -n 1) =~ .*zsh ]]; then
+    if [[ $(sh -c 'ps -p $$ -o ppid=' | xargs ps -o comm= -p) =~ .*zsh ]]; then
         setopt rmstarsilent
     fi
 
     rm -rf $buildfolder/*
     rm -rf $buildfolder/.*
 
-    if [[ $SHELL == "/bin/zsh" ]]; then
+    # if [[ $(ps -p $$ | awk '{print $4}' | tail -n 1) =~ .*zsh ]]; then
+    if [[ $(sh -c 'ps -p $$ -o ppid=' | xargs ps -o comm= -p) =~ .*zsh ]]; then
         unsetopt rmstarsilent
     fi
 
