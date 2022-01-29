@@ -105,6 +105,9 @@ for compileversion in "${compileversions[@]}"; do
     ninja
     cd ../../
 
+done
+
+for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
     if [[ $(arch) =~ x86.* || $(arch) == "i386" ]]; then
         echo "arch = $(arch)"
     else
