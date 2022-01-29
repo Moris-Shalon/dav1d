@@ -107,10 +107,8 @@ for compileversion in "${compileversions[@]}"; do
 
 done
 
-for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
-    if [[ $(arch) =~ x86.* || $(arch) == "i386" ]]; then
-        echo "arch = $(arch)"
-    else
+if [[ $(arch) =~ x86.* || $(arch) == "i386" ]]; then
+    for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
         mkdir x86_64
         cd x86_64
         if [[ $OSTYPE =~ ^darwin.* ]]; then
@@ -121,8 +119,8 @@ for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
         wget https://github.com/ZChuckMoris/dav1d/releases/download/$dav1dversion/dav1d-$OS-x86_64-$dav1dversion$compileversion.tar.gz
         tar -xzf dav1d-$OS-x86_64-$dav1dversion$compileversion.tar.gz
         cd ../
-    fi
-done
+    done
+fi
 
 for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chimera/Old/Chimera-AV1-8bit-1920x1080-6736kbps.ivf" "Chimera/Old/Chimera-AV1-10bit-1920x1080-6191kbps.ivf"; do
     if [[ ! -f $(basename $av1video) ]]; then
