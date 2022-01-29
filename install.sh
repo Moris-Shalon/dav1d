@@ -38,7 +38,8 @@ done
 mkdir av1
 cd av1
 
-if [[ $(arch) == "i386" || $(arch) =~ x86.* || $(arch) == "amd64" || $(arch) =~ arm.* || $(arch) == "aarch64" ]]; then
+# If $(arch) = x86/i386/i486/i586/x86_64/amd64/arm/arm64/aarch64
+if [[ $(arch) =~ ^((x|i[[:digit:]])86|^amd64|^arm|^aarch64) ]]; then
     declare -a compileversions=("" "-O3" "-O4" "-asm" "-asm-O3")
 else
     declare -a compileversions=("" "-O3" "-O4")
@@ -107,7 +108,7 @@ for compileversion in "${compileversions[@]}"; do
 
 done
 
-if [[ $(arch) =~ x86.* || $(arch) == "i386" ]]; then
+if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|^amd64) ]]; then
     for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
         mkdir x86_64
         cd x86_64
