@@ -127,4 +127,9 @@ for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chim
     if [[ ! -f $(basename $av1video) ]]; then
         wget http://download.opencontent.netflix.com.s3.amazonaws.com/AV1/$av1video
     fi
+    if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|^amd64) ]]; then
+        cd x86_64
+            ln -s ../$av1video $av1video;
+        cd ../
+    fi
 done
