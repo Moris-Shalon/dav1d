@@ -129,7 +129,7 @@ for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chim
     fi
     if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|^amd64) ]]; then
         cd x86_64
-            ln -s ../$av1video $av1video;
+            ln -s ../$(basename $av1video) $(basename $av1video);
         cd ../
     fi
 done
