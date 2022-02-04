@@ -98,9 +98,9 @@ for compileversion in "${compileversions[@]}"; do
     cd $buildfolder
 
     if [[ $compileversion =~ .*-O3.* || $compileversion =~ .*-O4.* ]]; then
-        meson .. --optimization=3
+        meson .. --optimization=3 --default-library=static
     else
-        meson ..
+        meson .. --default-library=static
     fi
 
     ninja
