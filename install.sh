@@ -39,7 +39,7 @@ mkdir av1
 cd av1
 
 # If $(arch) = x86/i386/i486/i586/x86_64/amd64/arm/arm64/aarch64
-if [[ $(arch) =~ ^((x|i[[:digit:]])86|^amd64|^arm|^aarch64) ]]; then
+if [[ $(arch) =~ ^((x|i[[:digit:]])86|amd64|arm|aarch64) ]]; then
     declare -a compileversions=("" "-O3" "-O4" "-asm" "-asm-O3")
 else
     declare -a compileversions=("" "-O3" "-O4")
@@ -61,9 +61,9 @@ for compileversion in "${compileversions[@]}"; do
     cd ../
 
     if [[ $compileversion =~ .*-asm.* ]]; then
-        sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) false/\1 true/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
+        sed -i.backup -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) false/\1 true/g" ./dav1d-$dav1dversion$compileversion/meson_options.txt
     else
-        sed -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) true/\1 false/g" -i.backup ./dav1d-$dav1dversion$compileversion/meson_options.txt
+        sed -i.backup -E -e ':a' -e 'N' -e '$!ba' -e "s/([[:space:]]*option\('enable_asm',\n[[:space:]]*type: 'boolean',\n[[:space:]]*value:) true/\1 false/g" ./dav1d-$dav1dversion$compileversion/meson_options.txt
     fi
 
     if [[ $compileversion =~ .*-O4.* ]] && [[ $(arch) != "e2k" ]]; then
@@ -108,7 +108,7 @@ for compileversion in "${compileversions[@]}"; do
 
 done
 
-if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|^amd64) ]]; then
+if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|amd64) ]]; then
     for compileversion in "" "-O3" "-O4" "-asm" "-asm-O3"; do
         mkdir x86_64
         cd x86_64
@@ -127,7 +127,7 @@ for av1video in "Chimera/Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chim
     if [[ ! -f $(basename $av1video) ]]; then
         wget http://download.opencontent.netflix.com.s3.amazonaws.com/AV1/$av1video
     fi
-    if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|^amd64) ]]; then
+    if [[ ! $(arch) =~ ^((x|i[[:digit:]])86|amd64) ]]; then
         cd x86_64
             ln -s ../$(basename $av1video) $(basename $av1video);
         cd ../
