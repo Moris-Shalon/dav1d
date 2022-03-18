@@ -11,7 +11,7 @@ function usage()
      -h, --help         Show this help message and exit
 
      -v, --version      Specify dav1d version to be downloaded and compiled. 
-                        Supported versions: 0.5.2, 0.8.2, 0.9.2 and 0.9.3-git-6aaeeea6. 
+                        Supported versions: 0.5.2, 0.8.2, 0.9.2, 0.9.3-git-6aaeeea6 and 1.0.0. 
                         By default is using version 0.9.3-git-6aaeeea6.
 
 
@@ -56,6 +56,8 @@ for compileversion in "${compileversions[@]}"; do
         git reset --hard 7b433e077298d0f4faf8da6d6eb5774e29bffa54
     elif [[ $dav1dversion = "0.9.3-git-6aaeeea6" ]]; then
         git reset --hard 6aaeeea6896ce30d387e7660553844eaa79f35c5
+    elif [[ $dav1dversion = "1.0.0" ]]; then
+        git reset --hard 99172b11470776177939c3d2bc366fe8d904eab7
     fi
 
     cd ../
