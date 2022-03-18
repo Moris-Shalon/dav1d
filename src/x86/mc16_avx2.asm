@@ -202,14 +202,6 @@ cextern resize_filter
 
 SECTION .text
 
-%macro REPX 2-*
-    %xdefine %%f(x) %1
-%rep %0 - 1
-    %rotate 1
-    %%f({%1})
-%endrep
-%endmacro
-
 INIT_XMM avx2
 cglobal put_bilin_16bpc, 4, 8, 0, dst, ds, src, ss, w, h, mxy
     mov                mxyd, r6m ; mx
@@ -5789,7 +5781,7 @@ cglobal resize_16bpc, 6, 12, 16, dst, dst_stride, src, src_stride, \
     vpbroadcastd         m5, dxm
     vpbroadcastd         m8, mx0m
     vpbroadcastd         m6, src_wm
- DEFINE_ARGS dst, dst_stride, src, src_stride, dst_w, h, x, picptr, _, pxmax
+ DEFINE_ARGS dst, dst_stride, src, src_stride, dst_w, h, x, _, _, pxmax
     LEA                  r7, $$
 %define base r7-$$
     vpbroadcastd         m3, [base+pd_64]

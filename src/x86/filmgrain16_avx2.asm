@@ -25,10 +25,11 @@
 
 %include "config.asm"
 %include "ext/x86/x86inc.asm"
+%include "x86/filmgrain_common.asm"
 
 %if ARCH_X86_64
 
-SECTION_RODATA 32
+SECTION_RODATA 16
 pb_mask:       db  0,128,128,  0,128,  0,  0,128,128,  0,  0,128,  0,128,128,  0
 gen_shufA:     db  0,  1,  2,  3,  2,  3,  4,  5,  4,  5,  6,  7,  6,  7,  8,  9
 gen_shufB:     db  4,  5,  6,  7,  6,  7,  8,  9,  8,  9, 10, 11, 10, 11, 12, 13
@@ -81,37 +82,7 @@ JMP_TABLE generate_grain_uv_420_16bpc_avx2, 0, 1, 2, 3
 JMP_TABLE generate_grain_uv_422_16bpc_avx2, 0, 1, 2, 3
 JMP_TABLE generate_grain_uv_444_16bpc_avx2, 0, 1, 2, 3
 
-struc FGData
-    .seed:                      resd 1
-    .num_y_points:              resd 1
-    .y_points:                  resb 14 * 2
-    .chroma_scaling_from_luma:  resd 1
-    .num_uv_points:             resd 2
-    .uv_points:                 resb 2 * 10 * 2
-    .scaling_shift:             resd 1
-    .ar_coeff_lag:              resd 1
-    .ar_coeffs_y:               resb 24
-    .ar_coeffs_uv:              resb 2 * 28 ; includes padding
-    .ar_coeff_shift:            resq 1
-    .grain_scale_shift:         resd 1
-    .uv_mult:                   resd 2
-    .uv_luma_mult:              resd 2
-    .uv_offset:                 resd 2
-    .overlap_flag:              resd 1
-    .clip_to_restricted_range:  resd 1
-endstruc
-
-cextern gaussian_sequence
-
 SECTION .text
-
-%macro REPX 2-*
-    %xdefine %%f(x) %1
-%rep %0 - 1
-    %rotate 1
-    %%f(%1)
-%endrep
-%endmacro
 
 %define m(x) mangle(private_prefix %+ _ %+ x %+ SUFFIX)
 
@@ -906,7 +877,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     mov             r6d, r9m ; bdmax
     mov             r9d, [fg_dataq+FGData.clip_to_restricted_range]
     mov             r7d, [fg_dataq+FGData.scaling_shift]
-    movifnidn      sbyd, sbym
+    mov            sbyd, sbym
     vpbroadcastd     m8, r9m
     shr             r6d, 11  ; is_12bpc
     vpbroadcastd     m9, [base+grain_min+r6*4]
@@ -919,7 +890,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     test           sbyd, sbyd
     setnz           r7b
     vpbroadcastd    m14, [base+pd_16]
-    test            r7b, byte [fg_dataq+FGData.overlap_flag]
+    test            r7b, [fg_dataq+FGData.overlap_flag]
     jnz .vertical_overlap
 
     imul           seed, sbyd, (173 << 24) | 37
@@ -1015,7 +986,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     DEFINE_ARGS dst, src, stride, fg_data, w, scaling, grain_lut, \
                 offx, offy, see, src_bak, left_offxy
 
-    lea     left_offxyd, [offyd+32]         ; previous column's offy*stride+offx
+    lea     left_offxyd, [offyq+32]         ; previous column's offy*stride+offx
     rorx          offyd, seed, 8
     rorx          offxq, seeq, 12
     and           offyd, 0xf
@@ -1088,8 +1059,6 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     cmp       dword r8m, 0 ; sby
     jne .loop_x_hv_overlap
     jmp .loop_x_h_overlap
-.end:
-    RET
 
 .vertical_overlap:
     DEFINE_ARGS dst, src, stride, fg_data, w, scaling, grain_lut, unused1, \
@@ -1223,7 +1192,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     jmp .loop_y
 .end_y_v_overlap:
     add              wq, 32
-    jge .end_hv
+    jge .end
     lea            srcq, [src_bakq+wq*2]
 
     ; since fg_dataq.overlap is guaranteed to be set, we never jump
@@ -1249,8 +1218,8 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     DEFINE_ARGS dst, src, stride, fg_data, w, scaling, grain_lut, \
                 offx, offy, see, src_bak, left_offxy, top_offxy, topleft_offxy
 
-    lea  topleft_offxyq, [top_offxyq+32]
-    lea     left_offxyq, [offyq+32]
+    lea  topleft_offxyd, [top_offxyq+32]
+    lea     left_offxyd, [offyq+32]
     rorx          offyd, seed, 8
     rorx          offxd, seed, 12
     and           offyd, 0xf000f
@@ -1300,7 +1269,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     pmaddwd         xm6, xm4
     paddd           xm6, xm14
     psrad           xm6, 5
-    packssdw        xm6, xm4
+    packssdw        xm6, xm6
     pmaxsw          xm6, xm9
     pminsw          xm6, xm10
     pshuflw         xm4, xm6, q1032
@@ -1322,7 +1291,6 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     punpckhwd        m6, m7
     pmaddwd          m5, m15
     pmaddwd          m6, m15
-    vpbroadcastd     m7, r9m
     paddd            m5, m14
     paddd            m6, m14
     psrad            m5, 5
@@ -1366,7 +1334,7 @@ cglobal fgy_32x32xn_16bpc, 6, 14, 16, dst, src, stride, fg_data, w, scaling, \
     add              wq, 32
     lea            srcq, [src_bakq+wq*2]
     jl .loop_x_hv_overlap
-.end_hv:
+.end:
     RET
 
 %macro FGUV_FN 3 ; name, ss_hor, ss_ver
@@ -1377,7 +1345,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
     mov             r9d, r13m               ; bdmax
     mov             r7d, [fg_dataq+FGData.scaling_shift]
     mov            r11d, is_idm
-    movifnidn      sbyd, sbym
+    mov            sbyd, sbym
     vpbroadcastw    m11, [base+mul_bits+r7*2-12]
     mov             r6d, [fg_dataq+FGData.clip_to_restricted_range]
     shr             r9d, 11                 ; is_12bpc
@@ -1414,7 +1382,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
 %endif
     vpbroadcastd    m14, [base+pd_16]
 %endif
-    test            r7b, byte [fg_dataq+FGData.overlap_flag]
+    test            r7b, [fg_dataq+FGData.overlap_flag]
     jnz %%vertical_overlap
 
     imul           seed, sbyd, (173 << 24) | 37
@@ -1567,7 +1535,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
 %endif
     jg %%loop_y
     add              wq, 32>>%2
-    jge %%end
+    jge .end
     mov            srcq, r9mp
     mov            dstq, r11mp
     mov           lumaq, r12mp
@@ -1590,7 +1558,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
     DEFINE_ARGS dst, src, stride, fg_data, w, scaling, grain_lut, \
                 offx, offy, see, left_offxy, unused1, unused2, luma, lstride
 
-    lea     left_offxyd, [offyd+(32>>%2)]         ; previous column's offy*stride+offx
+    lea     left_offxyd, [offyq+(32>>%2)]         ; previous column's offy*stride+offx
     rorx          offyd, seed, 8
     rorx          offxq, seeq, 12
     and           offyd, 0xf
@@ -1746,7 +1714,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
 %endif
     jg %%loop_y_h_overlap
     add              wq, 32>>%2
-    jge %%end
+    jge .end
     mov            srcq, r9mp
     mov            dstq, r11mp
     mov           lumaq, r12mp
@@ -1756,8 +1724,6 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
     cmp       dword r8m, 0 ; sby
     jne %%loop_x_hv_overlap
     jmp %%loop_x_h_overlap
-%%end:
-    RET
 
 %%vertical_overlap:
     DEFINE_ARGS dst, src, stride, fg_data, w, scaling, grain_lut, unused, \
@@ -1986,7 +1952,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
 %endif
 %%end_y_v_overlap:
     add              wq, 32>>%2
-    jge %%end_hv
+    jge .end
     mov            srcq, r9mp
     mov            dstq, r11mp
     mov           lumaq, r12mp
@@ -2255,7 +2221,7 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
 %endif
 %%end_y_hv_overlap:
     add              wq, 32>>%2
-    jge %%end_hv
+    jge .end
     mov            srcq, r9mp
     mov            dstq, r11mp
     mov           lumaq, r12mp
@@ -2263,13 +2229,13 @@ cglobal fguv_32x32xn_i%1_16bpc, 6, 15, 16, dst, src, stride, fg_data, w, scaling
     lea            dstq, [dstq+wq*2]
     lea           lumaq, [lumaq+wq*(2<<%2)]
     jmp %%loop_x_hv_overlap
-%%end_hv:
-    RET
 %endmacro
 
     %%FGUV_32x32xN_LOOP 1, %2, %3
 .csfl:
     %%FGUV_32x32xN_LOOP 0, %2, %3
+.end:
+    RET
 %endmacro
 
 GEN_GRAIN_UV_FN 420, 1, 1

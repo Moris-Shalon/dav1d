@@ -166,14 +166,6 @@ cextern resize_filter
 
 SECTION .text
 
-%macro REPX 2-*
-    %xdefine %%f(x) %1
-%rep %0 - 1
-    %rotate 1
-    %%f(%1)
-%endrep
-%endmacro
-
 %if UNIX64
 DECLARE_REG_TMP 7
 %else
@@ -4799,9 +4791,7 @@ INIT_XMM ssse3
     psrad                m6, hsh_mem
     packssdw            m11, m6                     ; 7 8
 %if ARCH_X86_64
-    ; fixme a bug in x86inc.asm forces us to explicitly load m9
-    mova                 m9, [stk+0x40]
-    shufps               m9, m11, q1032 ; 6 7
+    shufps               m9, [stk+0x40], m11, q1032 ; 6 7
     mova                 m0, [stk+0x00]
     mova         [stk+0x40], m11
 %else
@@ -8550,7 +8540,7 @@ cglobal resize_16bpc, 0, 6, 8, 6*16, dst, dst_stride, src, src_stride, \
     pshufd              m5, m5, q0000
     mova [rsp+16*3*ARCH_X86_32], m4
 %if ARCH_X86_64
- DEFINE_ARGS dst, dst_stride, src, src_stride, dst_w, h, x, picptr
+ DEFINE_ARGS dst, dst_stride, src, src_stride, dst_w, h, x
     LEA                 r7, $$
  %define base r7-$$
 %else
