@@ -108,7 +108,7 @@ for folder in "${folders[@]}"; do
         echo ;
         eval $translate ./$dav1d --version;
         for testvideo in "Chimera-2397fps-AV1-10bit-1920x1080-3365kbps.obu" "Chimera-AV1-8bit-1920x1080-6736kbps.ivf" "Chimera-AV1-10bit-1920x1080-6191kbps.ivf"; do
-            if [[ $OSTYPE =~ ^linux.* ]]; then
+            if [[ $OSTYPE =~ ^linux ]]; then
                 /usr/bin/time -f "Elapsed: %E (%e secs). Mode: $Mode. dav1d$buildargs. Threads: $cputhreads. Video: $testvideo" /bin/bash -c "eval $translate ./$dav1d -i ./$testvideo $postargs &>/dev/null";
             else
                 shell="bash";
