@@ -54,7 +54,7 @@ if [[ $(arch) =~ ^(arm|aarch64) ]]; then
 fi;
 if [[  $(arch) =~ ^e2k ]]; then 
     translator="/opt/mcst/rtc/bin/rtc_opt_rel_p1_x64_ob"; 
-    translatorargs="--path_prefix /mnt/shared/rtc/ubuntu20.04/ -b $HOME -b /etc/passwd -b /etc/group -b /etc/resolv.conf -b /mnt/shared --"; 
+    translatorargs="--path_prefix /mnt/shared/rtc/ubuntu20.04/ -b $HOME -b /etc/passwd -b /etc/group -b /etc/resolv.conf --"; 
 fi;
 
 if [[ ! $(nproc) || $(nproc) == "" || $(nproc) -le 0 ]]; 
