@@ -46,7 +46,7 @@ if [[ $(arch) =~ ^(arm|aarch64) ]]; then
         if [[ $(ps -p $$ | awk '{print $4}' | tail -n 1) =~ zsh ]]; then
             echo '?Trying to run on unsupported platform.';
             return 1 2>/dev/null;
-        else;
+        else
             while true; do
                 read -s -n 1 -p "Unsupported platform. Press Ctrl+C to quit.";
             done;
