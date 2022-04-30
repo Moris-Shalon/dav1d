@@ -112,7 +112,7 @@ for folder in "${folders[@]}"; do
                 /usr/bin/time -f "Elapsed: %E (%e secs). Mode: $Mode. dav1d$buildargs. Threads: $cputhreads. Video: $testvideo" /bin/bash -c "eval $translate ./$dav1d -i ./$testvideo $postargs &>/dev/null";
             else
                 shell="bash";
-                if [[ $(ps -p $$ | awk '{print $4}' | tail -n 1) =~ .*zsh ]]; then
+                if [[ $(ps -p $$ | awk '{print $4}' | tail -n 1) =~ zsh ]]; then
                     shell="zsh";
                 fi;
                 /usr/bin/time /bin/$shell -c "eval $translate ./$dav1d -i ./$testvideo $postargs &>/dev/null";
