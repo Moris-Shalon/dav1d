@@ -56,7 +56,7 @@ fi;
 if [[  $(arch) =~ ^e2k ]]; then
     translator="/opt/mcst/rtc/bin/rtc_opt_rel_p1_x64_ob";
     translatorargs="--path_prefix /mnt/shared/rtc/ubuntu20.04/ -b $HOME -b /etc/passwd -b /etc/group -b /etc/resolv.conf --";
-    function transver() { /opt/mcst/rtc/bin/rtc_opt_rel_p1_x64_ob --version | egrep -o "^.*lcc\s?[a-Z0-9.]*" };
+    function transver() { /opt/mcst/rtc/bin/rtc_opt_rel_p1_x64_ob --version | egrep -o "^.*lcc\s?[a-Z0-9.]*"; };
 fi;
 
 if [[ ! $(nproc) || $(nproc) == "" || $(nproc) -le 0 ]];
